@@ -7,24 +7,24 @@ pxrd-tools
   <tr>
     <td>Documentation</td>
     <td>
-      <a href="https://ktchu.github.io/pxrd-tools/dev/"><img style="vertical-align: bottom;" src="https://img.shields.io/badge/docs-dev-blue.svg"/></a>
-      <a href="https://ktchu.github.io/pxrd-tools/stable/"><img style="vertical-align: bottom;" src="https://img.shields.io/badge/docs-stable-blue.svg"/></a>
+      <a href="https://velexi-research.github.io/pxrd-tools/dev/"><img style="vertical-align: bottom;" src="https://img.shields.io/badge/docs-dev-blue.svg"/></a>
+      <a href="https://velexi-research.github.io/pxrd-tools/stable/"><img style="vertical-align: bottom;" src="https://img.shields.io/badge/docs-stable-blue.svg"/></a>
     </td>
   </tr>
   
   <tr>
     <td>Build Status</td>
     <td>
-      <a href="https://github.com/ktchu/pxrd-tools/actions/workflows/CI.yml"><img style="vertical-align: bottom;" src="https://github.com/ktchu/pxrd-tools/actions/workflows/CI.yml/badge.svg"/></a>
-      <a href="https://codecov.io/gh/ktchu/pxrd-tools">
-        <img style="vertical-align: bottom;" src="https://codecov.io/gh/ktchu/pxrd-tools/branch/main/graph/badge.svg"/></a>
+      <a href="https://github.com/velexi-research/pxrd-tools/actions/workflows/CI.yml"><img style="vertical-align: bottom;" src="https://github.com/velexi-research/pxrd-tools/actions/workflows/CI.yml/badge.svg"/></a>
+      <a href="https://codecov.io/gh/velexi-research/pxrd-tools">
+        <img style="vertical-align: bottom;" src="https://codecov.io/gh/velexi-research/pxrd-tools/branch/main/graph/badge.svg"/></a>
     </td>
   </tr>
 
   <!-- Miscellaneous Badges -->
   <tr>
     <td colspan=2 align="center">
-      <a href="https://github.com/ktchu/pxrd-tools/issues"><img style="vertical-align: bottom;" src="https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat"/></a>
+      <a href="https://github.com/velexi-research/pxrd-tools/issues"><img style="vertical-align: bottom;" src="https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat"/></a>
     </td>
   </tr>
 </table>
