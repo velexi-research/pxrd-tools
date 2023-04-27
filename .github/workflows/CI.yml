@@ -115,8 +115,8 @@ jobs:
 
     runs-on: ubuntu-latest
 
-    env:
-      python-version: "3.11"
+#    env:
+#      python-version: "3.11"
 
     # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
     permissions:
