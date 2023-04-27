@@ -163,6 +163,13 @@ jobs:
       - name: Build documentation
         run: poetry run make docs
 
+      # --- Upload Pages artifact
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v1
+        with:
+          path: docs/pxrd-tools
+
   deploy-docs:
     name: Deploy Documentation
 
@@ -192,11 +199,6 @@ jobs:
         uses: actions/configure-pages@v3
 
       # --- Deploy documentation
-
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v1
-        with:
-          path: docs/pxrd-tools
 
       - name: Deploy to GitHub Pages
         id: deployment
