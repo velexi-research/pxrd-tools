@@ -57,7 +57,7 @@ jobs:
       # --- Install Poetry
 
       - name: Load cached $HOME/.local
-        uses: actions/cache@v2.1.6
+        uses: actions/cache@v3
         with:
           path: ~/.local
           key: dotlocal-${{ runner.os }}-${{ runner.arch }}-${{ matrix.python-version }}-${{ hashFiles('.github/workflows/CI.yml') }}
@@ -73,7 +73,7 @@ jobs:
 
       - name: Load cached venv
         id: cached-poetry-dependencies
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: .venv
           key: venv-${{ runner.os }}-${{ runner.arch }}-${{ matrix.python-version }}-${{ hashFiles('**/poetry.lock') }}
@@ -141,7 +141,7 @@ jobs:
       # --- Install Poetry
 
       - name: Load cached $HOME/.local
-        uses: actions/cache@v2.1.6
+        uses: actions/cache@v3
         with:
           path: ~/.local
           key: dotlocal-${{ runner.os }}-${{ runner.arch }}-${{ env.python-version }}-${{ hashFiles('.github/workflows/CI.yml') }}
@@ -157,7 +157,7 @@ jobs:
 
       - name: Load cached venv
         id: cached-poetry-dependencies
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: .venv
           key: venv-docs-${{ runner.os }}-${{ runner.arch }}-${{ env.python-version }}-${{ hashFiles('**/poetry.lock') }}
