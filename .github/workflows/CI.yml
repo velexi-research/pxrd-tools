@@ -109,16 +109,20 @@ jobs:
   build-and-deploy-docs:
     name: Build and Deploy Documentation
 
-    runs-on: ubuntu-latest
-
-    env:
-      python-version: "3.11"
-
     # Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
     permissions:
       contents: read
       pages: write
       id-token: write
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    runs-on: ubuntu-latest
+
+    env:
+      python-version: "3.11"
 
     steps:
       # --- Check out code and setup Python
