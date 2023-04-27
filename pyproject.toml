@@ -8,6 +8,7 @@ authors = ["Kevin T. Chu <kevin@velexi.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.9"
+pandas = "^2.0.1"
 
 [tool.poetry.group.dev]
 optional = true
