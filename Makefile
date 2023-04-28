@@ -8,7 +8,7 @@ SRC_DIR=src
 CODE_DIRS=${SRC_DIR} tests
 
 # Package directories
-PKG_DIR=src/pxrd
+PKG_DIR=src/pxrd_tools
 DOCS_DIR=docs/pxrd-tools
 
 # Testing parameters

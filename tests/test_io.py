@@ -1,5 +1,5 @@
 """
-Unit tests for `pxrd.io` module.
+Unit tests for `pxrd_tools.io` module.
 """
 # --- Imports
 
@@ -13,15 +13,15 @@ from pandas import DataFrame
 import pytest
 
 # Local modules
-import pxrd.io
+import pxrd_tools.io
 
 
 # --- Test Suites
 
 
-class test_pxrd_io(unittest.TestCase):
+class test_pxrd_tools_io(unittest.TestCase):
     """
-    Test suite for the `pxrd.io` module.
+    Test suite for the `pxrd_tools.io` module.
     """
 
     # --- Fixtures
@@ -51,7 +51,7 @@ class test_pxrd_io(unittest.TestCase):
         path = "invalid/path"
 
         with pytest.raises(ValueError) as exception_info:
-            pxrd.io.read_csv(path)
+            pxrd_tools.io.read_csv(path)
 
         assert f"Data file '{path}' not found" in str(exception_info)
 
@@ -64,20 +64,20 @@ class test_pxrd_io(unittest.TestCase):
         # ------ path is a str
 
         path = self.test_data_file
-        data = pxrd.io.read_csv(path, delimiter=r"\s+")
+        data = pxrd_tools.io.read_csv(path, delimiter=r"\s+")
 
         # Check results
         assert isinstance(data, DataFrame)
-        assert list(data.columns) == pxrd.io._PXRD_DATAFRAME_COLUMNS
+        assert list(data.columns) == pxrd_tools.io._PXRD_DATAFRAME_COLUMNS
         assert len(data) == 7251
 
         # ------ path is a Path
 
         path = Path(self.test_data_file)
         assert isinstance(path, Path)
-        data = pxrd.io.read_csv(path, delimiter=r"\s+")
+        data = pxrd_tools.io.read_csv(path, delimiter=r"\s+")
 
         # Check results
         assert isinstance(data, DataFrame)
-        assert list(data.columns) == pxrd.io._PXRD_DATAFRAME_COLUMNS
+        assert list(data.columns) == pxrd_tools.io._PXRD_DATAFRAME_COLUMNS
         assert len(data) == 7251

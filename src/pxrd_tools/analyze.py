@@ -66,13 +66,13 @@ def clean_up_diffractogram(
 
     # --- Clean data
 
-    # Remove baseline
-    intensity = BaselineRemoval(raw_intensity).ZhangFit(
-        repitition=_ZHANG_FIT_REPETITIONS
+    # Apply Savitzky-Golay filter to remove high frequency noise
+    intensity = scipy.signal.savgol_filter(
+        raw_intensity, sg_filter_window, sg_filter_order
     )
 
-    # Apply Savitzky-Golay filter to remove high frequency noise
-    intensity = scipy.signal.savgol_filter(intensity, sg_filter_window, sg_filter_order)
+    # Remove baseline
+    intensity = BaselineRemoval(intensity).ZhangFit(repitition=_ZHANG_FIT_REPETITIONS)
 
     return intensity
 
@@ -90,7 +90,7 @@ def find_peaks(
     ---------
     intensity: diffractogram intensity data
 
-    min_height_quantile: TODO
+    min_height_quantile: quantile of
 
     prominence_quantile: TODO
 
