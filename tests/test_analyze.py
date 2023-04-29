@@ -37,9 +37,9 @@ class test_pxrd_tools_analyze(unittest.TestCase):
     # --- Tests
 
     @staticmethod
-    def test_clean_up_diffractogram_arg_checks():
+    def test_apply_diffractogram_corrections_arg_checks():
         """
-        Test argument checks for `clean_up_diffractogram()`.
+        Test argument checks for `apply_diffractogram_corrections()`.
         """
         # --- Exercise functionality and check results
 
@@ -47,7 +47,7 @@ class test_pxrd_tools_analyze(unittest.TestCase):
         raw_intensity = np.array([])
 
         with pytest.raises(ValueError) as exception_info:
-            pxrd_tools.analyze.clean_up_diffractogram(raw_intensity)
+            pxrd_tools.analyze.apply_diffractogram_corrections(raw_intensity)
 
         assert "'raw_intensity' should not be empty" in str(exception_info)
 
@@ -55,7 +55,7 @@ class test_pxrd_tools_analyze(unittest.TestCase):
         raw_intensity = np.array([[1, 2, 3], [4, 5, 6]])
 
         with pytest.raises(ValueError) as exception_info:
-            pxrd_tools.analyze.clean_up_diffractogram(raw_intensity)
+            pxrd_tools.analyze.apply_diffractogram_corrections(raw_intensity)
 
         assert "'raw_intensity' should be a 1D vector" in str(exception_info)
 
@@ -64,16 +64,18 @@ class test_pxrd_tools_analyze(unittest.TestCase):
         sg_filter_window = 10
 
         with pytest.raises(ValueError) as exception_info:
-            pxrd_tools.analyze.clean_up_diffractogram(raw_intensity, sg_filter_window)
+            pxrd_tools.analyze.apply_diffractogram_corrections(
+                raw_intensity, sg_filter_window
+            )
 
         assert (
             "If mode is 'interp', window_length must be less than or equal to the "
             "size of x." in str(exception_info)
         )
 
-    def test_clean_up_diffractogram(self):
+    def test_apply_diffractogram_corrections(self):
         """
-        Test `clean_up_diffractogram()`.
+        Test `apply_diffractogram_corrections()`.
         """
         # --- Test baseline removal
 
@@ -81,7 +83,7 @@ class test_pxrd_tools_analyze(unittest.TestCase):
         raw_intensity_no_noise = np.array([10, 20, 1.5, 5, 2, 9, 99, 25, 47])
 
         # Exerciser functionality
-        intensity_no_noise = pxrd_tools.analyze.clean_up_diffractogram(
+        intensity_no_noise = pxrd_tools.analyze.apply_diffractogram_corrections(
             raw_intensity_no_noise
         )
 
@@ -98,7 +100,7 @@ class test_pxrd_tools_analyze(unittest.TestCase):
         )
 
         # Exerciser functionality
-        intensity_with_noise = pxrd_tools.analyze.clean_up_diffractogram(
+        intensity_with_noise = pxrd_tools.analyze.apply_diffractogram_corrections(
             raw_intensity_with_noise
         )
 
