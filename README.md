@@ -11,7 +11,7 @@ pxrd-tools
       <a href="https://velexi-research.github.io/pxrd-tools/stable/"><img style="vertical-align: bottom;" src="https://img.shields.io/badge/docs-stable-blue.svg"/></a>
     </td>
   </tr>
-  
+
   <tr>
     <td>Build Status</td>
     <td>
@@ -25,6 +25,7 @@ pxrd-tools
   <tr>
     <td colspan=2 align="center">
       <a href="https://github.com/velexi-research/pxrd-tools/issues"><img style="vertical-align: bottom;" src="https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat"/></a>
+      <a href="https://github.com/psf/black"><img style="vertical-align: bottom;" src="https://img.shields.io/badge/code%20style-black-000000.svg"/></a>
     </td>
   </tr>
 </table>
