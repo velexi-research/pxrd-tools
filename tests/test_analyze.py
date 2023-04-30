@@ -196,13 +196,13 @@ class test_pxrd_tools_analyze(unittest.TestCase):
         )
 
         # Exerciser functionality
-        intensity_no_noise = pxrd_tools.analyze.apply_diffractogram_corrections(
+        corrected_data_no_noise = pxrd_tools.analyze.apply_diffractogram_corrections(
             raw_data_no_noise
         )
 
         # Check results
-        assert isinstance(intensity_no_noise, np.ndarray)
-        assert len(intensity_no_noise) == len(raw_data_no_noise)
+        assert isinstance(corrected_data_no_noise, DataFrame)
+        assert len(corrected_data_no_noise.index) == len(raw_data_no_noise.index)
 
         # --- Test noise removal
 
@@ -214,11 +214,15 @@ class test_pxrd_tools_analyze(unittest.TestCase):
         )
 
         # Exerciser functionality
-        intensity_with_noise = pxrd_tools.analyze.apply_diffractogram_corrections(
+        corrected_data_with_noise = pxrd_tools.analyze.apply_diffractogram_corrections(
             raw_data_with_noise
         )
 
         # Check results
-        assert isinstance(intensity_with_noise, np.ndarray)
-        assert len(intensity_with_noise) == len(raw_data_with_noise)
-        np.testing.assert_allclose(intensity_with_noise, intensity_no_noise, rtol=0.1)
+        assert isinstance(corrected_data_with_noise, DataFrame)
+        assert len(corrected_data_with_noise.index) == len(raw_data_with_noise.index)
+        np.testing.assert_allclose(
+            corrected_data_with_noise["intensity"],
+            corrected_data_no_noise["intensity"],
+            rtol=0.1,
+        )
