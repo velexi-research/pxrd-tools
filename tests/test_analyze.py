@@ -81,9 +81,9 @@ class test_pxrd_tools_analyze(unittest.TestCase):
             exception_info
         )
 
-        # raw_data has a "counts" column instead of an "intensity" column
+        # raw_data has a "count" column instead of an "intensity" column
         raw_data_test = copy.deepcopy(raw_data_valid)
-        raw_data_test.rename(columns={"intensity": "counts"}, inplace=True)
+        raw_data_test.rename(columns={"intensity": "count"}, inplace=True)
 
         try:
             pxrd_tools.analyze.apply_diffractogram_corrections(raw_data_test)
@@ -91,14 +91,14 @@ class test_pxrd_tools_analyze(unittest.TestCase):
         except Exception:
             pytest.fail("Valid `raw_data` raised error")
 
-        # raw_data is does not have an "intensity" or "counts" column
+        # raw_data is does not have an "intensity" or "count" column
         raw_data_test = copy.deepcopy(raw_data_valid)
         del raw_data_test["intensity"]
 
         with pytest.raises(ValueError) as exception_info:
             pxrd_tools.analyze.apply_diffractogram_corrections(raw_data_test)
 
-        assert "'raw_data' should contain an 'intensity' or 'counts' column" in str(
+        assert "'raw_data' should contain an 'intensity' or 'count' column" in str(
             exception_info
         )
 
@@ -136,7 +136,7 @@ class test_pxrd_tools_analyze(unittest.TestCase):
 
         # filter_window_size = None
         raw_data_test = copy.deepcopy(raw_data_valid)
-        raw_data_test.rename(columns={"intensity": "counts"}, inplace=True)
+        raw_data_test.rename(columns={"intensity": "count"}, inplace=True)
 
         try:
             pxrd_tools.analyze.apply_diffractogram_corrections(

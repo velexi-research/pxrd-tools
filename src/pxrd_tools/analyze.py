@@ -45,7 +45,7 @@ def apply_diffractogram_corrections(
     ----------
     `raw_data`: raw diffractogram data. Required columns:
       * "2-theta" or "two-theta"
-      * "intensity" or "counts"
+      * "intensity" or "count"
 
     `filter_order`: order of the polynomial to use for the Savitzky-Golay filter
 
@@ -89,10 +89,10 @@ def apply_diffractogram_corrections(
 
     if "intensity" in columns:
         intensity_column = "intensity"
-    elif "counts" in columns:
-        intensity_column = "counts"
+    elif "count" in columns:
+        intensity_column = "count"
     else:
-        raise ValueError("'raw_data' should contain an 'intensity' or 'counts' column")
+        raise ValueError("'raw_data' should contain an 'intensity' or 'count' column")
 
     # Check that the Savitky-Golay filter order is positive
     if filter_order <= 0:
