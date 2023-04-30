@@ -33,7 +33,7 @@ def apply_diffractogram_corrections(
     filter_order: int = _DEFAULT_FILTER_ORDER,
     filter_window_size: Optional[int] = None,
     zhang_fit_repetitions: int = _DEFAULT_ZHANG_FIT_REPETITIONS,
-) -> np.ndarray:
+) -> DataFrame:
     """
     Apply corrections to raw diffractogram to prepare it for analysis.
 
@@ -115,18 +115,28 @@ def apply_diffractogram_corrections(
 
     # --- Preparations
 
-    # Get 2-theta and intensity data
-    intensity = raw_data[intensity_column].to_numpy()
+    # Get intensity data
+    corrected_intensity = raw_data[intensity_column].to_numpy()
 
-    # --- Clean data
+    # --- Apply data correction
 
     # Apply Savitzky-Golay filter to remove high frequency noise
-    intensity = scipy.signal.savgol_filter(intensity, filter_window_size, filter_order)
+    corrected_intensity = scipy.signal.savgol_filter(
+        corrected_intensity, filter_window_size, filter_order
+    )
 
     # Remove baseline
-    intensity = BaselineRemoval(intensity).ZhangFit(repitition=zhang_fit_repetitions)
+    corrected_intensity = BaselineRemoval(corrected_intensity).ZhangFit(
+        repitition=zhang_fit_repetitions
+    )
 
-    return intensity
+    # --- Construct DataFrame with results
+
+    corrected_data = DataFrame()
+    corrected_data[two_theta_column] = raw_data[two_theta_column]
+    corrected_data[intensity_column] = corrected_intensity
+
+    return corrected_data
 
 
 def find_peaks(
