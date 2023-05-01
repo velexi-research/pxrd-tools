@@ -45,67 +45,67 @@ class test_pxrd_tools_analyze(unittest.TestCase):
         """
         # --- Preparations
 
-        # valid raw_data
-        raw_data_valid = DataFrame()
-        raw_data_valid["intensity"] = np.linspace(1, 10)
-        raw_data_valid["2-theta"] = np.linspace(1, 2)
+        # valid data
+        data_valid = DataFrame()
+        data_valid["intensity"] = np.linspace(1, 10)
+        data_valid["2-theta"] = np.linspace(1, 2)
 
         # --- Exercise functionality and check results
 
-        # raw_data is empty
-        raw_data_test = DataFrame()
+        # data is empty
+        data_test = DataFrame()
 
         with pytest.raises(ValueError) as exception_info:
-            pxrd_tools.analyze.apply_diffractogram_corrections(raw_data_test)
+            pxrd_tools.analyze.apply_diffractogram_corrections(data_test)
 
-        assert "'raw_data' should not be empty" in str(exception_info)
+        assert "'data' should not be empty" in str(exception_info)
 
-        # raw_data has a "two-theta" column instead of a "2-theta" column
-        raw_data_test = copy.deepcopy(raw_data_valid)
-        raw_data_test.rename(columns={"2-theta": "two-theta"}, inplace=True)
+        # data has a "two-theta" column instead of a "2-theta" column
+        data_test = copy.deepcopy(data_valid)
+        data_test.rename(columns={"2-theta": "two-theta"}, inplace=True)
 
         try:
-            pxrd_tools.analyze.apply_diffractogram_corrections(raw_data_test)
+            pxrd_tools.analyze.apply_diffractogram_corrections(data_test)
             assert True
         except Exception:
-            pytest.fail("Valid `raw_data` raised error")
+            pytest.fail("Valid `data` raised error")
 
-        # raw_data is does not have a "2-theta" or "two-theta" column
-        raw_data_test = copy.deepcopy(raw_data_valid)
-        del raw_data_test["2-theta"]
+        # data is does not have a "2-theta" or "two-theta" column
+        data_test = copy.deepcopy(data_valid)
+        del data_test["2-theta"]
 
         with pytest.raises(ValueError) as exception_info:
-            pxrd_tools.analyze.apply_diffractogram_corrections(raw_data_test)
+            pxrd_tools.analyze.apply_diffractogram_corrections(data_test)
 
-        assert "'raw_data' should contain a '2-theta' or 'two-theta' column" in str(
+        assert "'data' should contain a '2-theta' or 'two-theta' column" in str(
             exception_info
         )
 
-        # raw_data has a "count" column instead of an "intensity" column
-        raw_data_test = copy.deepcopy(raw_data_valid)
-        raw_data_test.rename(columns={"intensity": "count"}, inplace=True)
+        # data has a "count" column instead of an "intensity" column
+        data_test = copy.deepcopy(data_valid)
+        data_test.rename(columns={"intensity": "count"}, inplace=True)
 
         try:
-            pxrd_tools.analyze.apply_diffractogram_corrections(raw_data_test)
+            pxrd_tools.analyze.apply_diffractogram_corrections(data_test)
             assert True
         except Exception:
-            pytest.fail("Valid `raw_data` raised error")
+            pytest.fail("Valid `data` raised error")
 
-        # raw_data is does not have an "intensity" or "count" column
-        raw_data_test = copy.deepcopy(raw_data_valid)
-        del raw_data_test["intensity"]
+        # data is does not have an "intensity" or "count" column
+        data_test = copy.deepcopy(data_valid)
+        del data_test["intensity"]
 
         with pytest.raises(ValueError) as exception_info:
-            pxrd_tools.analyze.apply_diffractogram_corrections(raw_data_test)
+            pxrd_tools.analyze.apply_diffractogram_corrections(data_test)
 
-        assert "'raw_data' should contain an 'intensity' or 'count' column" in str(
+        assert "'data' should contain an 'intensity' or 'count' column" in str(
             exception_info
         )
 
         # filter_order = 0
         with pytest.raises(ValueError) as exception_info:
             pxrd_tools.analyze.apply_diffractogram_corrections(
-                raw_data_valid, filter_order=0
+                data_valid, filter_order=0
             )
 
         assert "'filter_order' should be positive" in str(exception_info)
@@ -113,7 +113,7 @@ class test_pxrd_tools_analyze(unittest.TestCase):
         # filter_order < 0
         with pytest.raises(ValueError) as exception_info:
             pxrd_tools.analyze.apply_diffractogram_corrections(
-                raw_data_valid, filter_order=-5
+                data_valid, filter_order=-5
             )
 
         assert "'filter_order' should be positive" in str(exception_info)
@@ -121,7 +121,7 @@ class test_pxrd_tools_analyze(unittest.TestCase):
         # filter_window_size = 0
         with pytest.raises(ValueError) as exception_info:
             pxrd_tools.analyze.apply_diffractogram_corrections(
-                raw_data_valid, filter_window_size=0
+                data_valid, filter_window_size=0
             )
 
         assert "'filter_window_size' should be positive" in str(exception_info)
@@ -129,29 +129,29 @@ class test_pxrd_tools_analyze(unittest.TestCase):
         # filter_window_size < 0
         with pytest.raises(ValueError) as exception_info:
             pxrd_tools.analyze.apply_diffractogram_corrections(
-                raw_data_valid, filter_window_size=-5
+                data_valid, filter_window_size=-5
             )
 
         assert "'filter_window_size' should be positive" in str(exception_info)
 
         # filter_window_size = None
-        raw_data_test = copy.deepcopy(raw_data_valid)
-        raw_data_test.rename(columns={"intensity": "count"}, inplace=True)
+        data_test = copy.deepcopy(data_valid)
+        data_test.rename(columns={"intensity": "count"}, inplace=True)
 
         try:
             pxrd_tools.analyze.apply_diffractogram_corrections(
-                raw_data_test, filter_window_size=None
+                data_test, filter_window_size=None
             )
             assert True
         except Exception:
             pytest.fail(
-                "`filter_window_size` set to `None` with valid `raw_data` raised error"
+                "`filter_window_size` set to `None` with valid `data` raised error"
             )
 
         # zhang_fit_repetitions = 0
         with pytest.raises(ValueError) as exception_info:
             pxrd_tools.analyze.apply_diffractogram_corrections(
-                raw_data_valid, zhang_fit_repetitions=0
+                data_valid, zhang_fit_repetitions=0
             )
 
         assert "'zhang_fit_repetitions' should be positive" in str(exception_info)
@@ -159,21 +159,21 @@ class test_pxrd_tools_analyze(unittest.TestCase):
         # zhang_fit_repetitions < 0
         with pytest.raises(ValueError) as exception_info:
             pxrd_tools.analyze.apply_diffractogram_corrections(
-                raw_data_valid, zhang_fit_repetitions=-5
+                data_valid, zhang_fit_repetitions=-5
             )
 
         assert "'zhang_fit_repetitions' should be positive" in str(exception_info)
 
-        # length of raw_data less than filter_window
-        raw_data_test = DataFrame()
-        raw_data_test["intensity"] = [1, 2, 3, 4, 5]
-        raw_data_test["2-theta"] = [1, 2, 3, 4, 5]
+        # length of data less than filter_window
+        data_test = DataFrame()
+        data_test["intensity"] = [1, 2, 3, 4, 5]
+        data_test["2-theta"] = [1, 2, 3, 4, 5]
 
         filter_window_size = 10
 
         with pytest.raises(ValueError) as exception_info:
             pxrd_tools.analyze.apply_diffractogram_corrections(
-                raw_data_test, filter_window_size=filter_window_size
+                data_test, filter_window_size=filter_window_size
             )
 
         assert (
@@ -189,38 +189,36 @@ class test_pxrd_tools_analyze(unittest.TestCase):
         # --- Test baseline removal
 
         # Preparations
-        raw_data_no_noise = DataFrame()
-        raw_data_no_noise["intensity"] = np.array([10, 20, 1.5, 5, 2, 9, 99, 25, 47])
-        raw_data_no_noise["2-theta"] = np.linspace(
-            1, 1.5, num=len(raw_data_no_noise.index)
-        )
+        data_no_noise = DataFrame()
+        data_no_noise["intensity"] = np.array([10, 20, 1.5, 5, 2, 9, 99, 25, 47])
+        data_no_noise["2-theta"] = np.linspace(1, 1.5, num=len(data_no_noise.index))
 
         # Exerciser functionality
         corrected_data_no_noise = pxrd_tools.analyze.apply_diffractogram_corrections(
-            raw_data_no_noise
+            data_no_noise
         )
 
         # Check results
         assert isinstance(corrected_data_no_noise, DataFrame)
-        assert len(corrected_data_no_noise.index) == len(raw_data_no_noise.index)
+        assert len(corrected_data_no_noise.index) == len(data_no_noise.index)
 
         # --- Test noise removal
 
         # Preparations
         rng = np.random.default_rng(seed=0)
-        raw_data_with_noise = copy.deepcopy(raw_data_no_noise)
-        raw_data_with_noise["intensity"] += 0.05 * rng.standard_normal(
-            len(raw_data_no_noise.index)
+        data_with_noise = copy.deepcopy(data_no_noise)
+        data_with_noise["intensity"] += 0.05 * rng.standard_normal(
+            len(data_no_noise.index)
         )
 
         # Exerciser functionality
         corrected_data_with_noise = pxrd_tools.analyze.apply_diffractogram_corrections(
-            raw_data_with_noise
+            data_with_noise
         )
 
         # Check results
         assert isinstance(corrected_data_with_noise, DataFrame)
-        assert len(corrected_data_with_noise.index) == len(raw_data_with_noise.index)
+        assert len(corrected_data_with_noise.index) == len(data_with_noise.index)
         np.testing.assert_allclose(
             corrected_data_with_noise["intensity"],
             corrected_data_no_noise["intensity"],
