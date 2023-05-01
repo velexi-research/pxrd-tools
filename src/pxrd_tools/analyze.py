@@ -130,7 +130,7 @@ def apply_diffractogram_corrections(
         repitition=zhang_fit_repetitions
     )
 
-    # --- Construct DataFrame with results
+    # --- Construct DataFrame containing corrected data
 
     corrected_data = DataFrame()
     corrected_data[two_theta_column] = data[two_theta_column]
