@@ -5,6 +5,7 @@ Unit tests for `pxrd_tools.analyze` module.
 
 # Standard library
 import copy
+import os
 import unittest
 
 # External packages
@@ -13,6 +14,7 @@ import pytest
 
 # Local modules
 import pxrd_tools.analyze
+import pxrd_tools.io
 
 
 # --- Test Suites
@@ -29,6 +31,9 @@ class test_pxrd_tools_analyze(unittest.TestCase):
         """
         Prepare for test.
         """
+        self.test_pxrd_data_file = os.path.abspath(
+            os.path.join(os.path.dirname(__file__), "data", "zircon.prn")
+        )
 
     def tearDown(self):
         """
@@ -219,7 +224,7 @@ class test_pxrd_tools_analyze(unittest.TestCase):
         intensity_no_noise = np.array([10, 20, 1.5, 5, 2, 9, 99, 25, 47])
         two_theta_no_noise = np.linspace(1, 1.5, num=len(intensity_no_noise))
 
-        # Exerciser functionality
+        # Exercise functionality
         corrected_intensity_no_noise = (
             pxrd_tools.analyze.apply_diffractogram_corrections(
                 two_theta_no_noise, intensity_no_noise
@@ -237,7 +242,7 @@ class test_pxrd_tools_analyze(unittest.TestCase):
         intensity_with_noise = copy.deepcopy(intensity_no_noise)
         intensity_with_noise += 0.05 * rng.standard_normal(len(intensity_no_noise))
 
-        # Exerciser functionality
+        # Exercise functionality
         corrected_intensity_with_noise = (
             pxrd_tools.analyze.apply_diffractogram_corrections(
                 two_theta_no_noise, intensity_no_noise
@@ -414,3 +419,87 @@ class test_pxrd_tools_analyze(unittest.TestCase):
             "'min_prominence_quantile' should lie in the interval [0, 1]."
             in str(exception_info)
         )
+
+    def test_find_diffractogram_peaks(self):
+        """
+        Test `find_diffractogram_peaks()`.
+        """
+        # --- Preparations
+
+        pxrd_data = pxrd_tools.io.read_csv(self.test_pxrd_data_file, delimiter=r"\s+")
+        two_theta = pxrd_data["2-theta"].to_numpy()
+        intensity = pxrd_data["count"].to_numpy()
+
+        # Apply data corrections
+        corrected_intensity = pxrd_tools.analyze.apply_diffractogram_corrections(
+            two_theta, intensity
+        )
+
+        # --- Exercise functionality
+
+        peaks, peak_widths = pxrd_tools.analyze.find_diffractogram_peaks(
+            two_theta, corrected_intensity
+        )
+
+        # --- Check results
+
+        # peak locations
+        assert len(peaks) == 52
+        assert list(peaks) == [
+            749,
+            1099,
+            1440,
+            1529,
+            1677,
+            1782,
+            1939,
+            2128,
+            2358,
+            2422,
+            2530,
+            2735,
+            2846,
+            2893,
+            3140,
+            3149,
+            3188,
+            3416,
+            3425,
+            3519,
+            3556,
+            3788,
+            3800,
+            3878,
+            3890,
+            4149,
+            4189,
+            4203,
+            4362,
+            4414,
+            4428,
+            4462,
+            4476,
+            4502,
+            4518,
+            4956,
+            4995,
+            5431,
+            5453,
+            5474,
+            5496,
+            5630,
+            5667,
+            5726,
+            5750,
+            5782,
+            5804,
+            6155,
+            6183,
+            6513,
+            6547,
+            7163,
+        ]
+
+        # peak widths
+        assert len(peak_widths) == 52
+        assert np.all(peak_widths >= pxrd_tools.analyze._MIN_PEAK_WIDTH_TWO_THETA)
