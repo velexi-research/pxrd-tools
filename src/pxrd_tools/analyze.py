@@ -152,7 +152,7 @@ def find_diffractogram_peaks(
 
     Return value
     ------------
-    `peaks`: indicies of the intensity where peaks are located
+    `peaks`: indices of the intensity where peaks are located
 
     `peak_widths`: peak widths in units of 2-theta
 
