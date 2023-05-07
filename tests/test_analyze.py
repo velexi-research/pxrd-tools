@@ -52,6 +52,8 @@ class test_pxrd_tools_analyze(unittest.TestCase):
 
         # --- Exercise functionality and check results
 
+        # ------ data
+
         # data is empty
         data_test = DataFrame()
 
@@ -102,6 +104,8 @@ class test_pxrd_tools_analyze(unittest.TestCase):
             exception_info
         )
 
+        # ------ filter_order
+
         # filter_order = 0
         with pytest.raises(ValueError) as exception_info:
             pxrd_tools.analyze.apply_diffractogram_corrections(
@@ -117,6 +121,8 @@ class test_pxrd_tools_analyze(unittest.TestCase):
             )
 
         assert "'filter_order' should be positive" in str(exception_info)
+
+        # ------ filter_window_size
 
         # filter_window_size = 0
         with pytest.raises(ValueError) as exception_info:
@@ -148,6 +154,8 @@ class test_pxrd_tools_analyze(unittest.TestCase):
                 "`filter_window_size` set to `None` with valid `data` raised error"
             )
 
+        # ------ zhang_fit_repetitions
+
         # zhang_fit_repetitions = 0
         with pytest.raises(ValueError) as exception_info:
             pxrd_tools.analyze.apply_diffractogram_corrections(
@@ -164,7 +172,8 @@ class test_pxrd_tools_analyze(unittest.TestCase):
 
         assert "'zhang_fit_repetitions' should be positive" in str(exception_info)
 
-        # length of data less than filter_window
+        # ------ length of data less than filter_window
+
         data_test = DataFrame()
         data_test["intensity"] = [1, 2, 3, 4, 5]
         data_test["2-theta"] = [1, 2, 3, 4, 5]
@@ -223,4 +232,146 @@ class test_pxrd_tools_analyze(unittest.TestCase):
             corrected_data_with_noise["intensity"],
             corrected_data_no_noise["intensity"],
             rtol=0.1,
+        )
+
+    @staticmethod
+    def test_find_diffractogram_peaks_arg_checks():
+        """
+        Test argument checks for `find_diffractogram_peaks()`.
+        """
+        # --- Preparations
+
+        # valid data
+        two_theta_valid = np.linspace(1, 2)
+        intensity_valid = np.linspace(1, 10)
+
+        # --- Exercise functionality and check results
+
+        # ------ two_theta
+
+        # two_theta is not a 1D vector
+        two_theta_test = np.array([[1, 2], [4, 4]])
+
+        with pytest.raises(ValueError) as exception_info:
+            pxrd_tools.analyze.find_diffractogram_peaks(two_theta_test, intensity_valid)
+
+        assert "two_theta' should be a 1D vector" in str(exception_info)
+
+        # two_theta is empty
+        two_theta_test = np.array([])
+
+        with pytest.raises(ValueError) as exception_info:
+            pxrd_tools.analyze.find_diffractogram_peaks(two_theta_test, intensity_valid)
+
+        assert "'two_theta' should not be empty" in str(exception_info)
+
+        # ------ intensity
+
+        # intensity is not a 1D vector
+        intensity_test = np.array([[1, 2], [4, 4]])
+
+        with pytest.raises(ValueError) as exception_info:
+            pxrd_tools.analyze.find_diffractogram_peaks(two_theta_valid, intensity_test)
+
+        assert "'intensity' should be a 1D vector" in str(exception_info)
+
+        # intensity is empty
+        intensity_test = np.array([])
+
+        with pytest.raises(ValueError) as exception_info:
+            pxrd_tools.analyze.find_diffractogram_peaks(two_theta_valid, intensity_test)
+
+        assert "'intensity' should not be empty" in str(exception_info)
+
+        # ------ two_theta and intensity not the same size
+
+        intensity_test = np.append(two_theta_valid, 0)
+
+        with pytest.raises(ValueError) as exception_info:
+            pxrd_tools.analyze.find_diffractogram_peaks(two_theta_valid, intensity_test)
+
+        assert "'two_theta' and 'intensity' should be the same size" in str(
+            exception_info
+        )
+
+        # ------ min_intensity_quantile
+
+        # min_intensity_quantile < 0
+        min_intensity_quantile = -1
+        with pytest.raises(ValueError) as exception_info:
+            pxrd_tools.analyze.find_diffractogram_peaks(
+                two_theta_valid,
+                intensity_valid,
+                min_intensity_quantile=min_intensity_quantile,
+            )
+
+        assert (
+            f"Invalid 'min_intensity_quantile' value: {min_intensity_quantile}. "
+            "'min_intensity_quantile' should lie in the interval [0, 1]."
+            in str(exception_info)
+        )
+
+        # min_intensity_quantile > 1
+        min_intensity_quantile = 2
+        with pytest.raises(ValueError) as exception_info:
+            pxrd_tools.analyze.find_diffractogram_peaks(
+                two_theta_valid,
+                intensity_valid,
+                min_intensity_quantile=min_intensity_quantile,
+            )
+
+        assert (
+            f"Invalid 'min_intensity_quantile' value: {min_intensity_quantile}. "
+            "'min_intensity_quantile' should lie in the interval [0, 1]."
+            in str(exception_info)
+        )
+
+        # ------ min_width
+
+        # min_width = 0
+        with pytest.raises(ValueError) as exception_info:
+            pxrd_tools.analyze.find_diffractogram_peaks(
+                two_theta_valid, intensity_valid, min_width=0
+            )
+
+        assert "'min_width' should be positive" in str(exception_info)
+
+        # min_width < 0
+        with pytest.raises(ValueError) as exception_info:
+            pxrd_tools.analyze.find_diffractogram_peaks(
+                two_theta_valid, intensity_valid, min_width=-5
+            )
+
+        assert "'min_width' should be positive" in str(exception_info)
+
+        # ------ min_prominence_quantile
+
+        # min_prominence_quantile < 0
+        min_prominence_quantile = -1
+        with pytest.raises(ValueError) as exception_info:
+            pxrd_tools.analyze.find_diffractogram_peaks(
+                two_theta_valid,
+                intensity_valid,
+                min_prominence_quantile=min_prominence_quantile,
+            )
+
+        assert (
+            f"Invalid 'min_prominence_quantile' value: {min_prominence_quantile}. "
+            "'min_prominence_quantile' should lie in the interval [0, 1]."
+            in str(exception_info)
+        )
+
+        # min_prominence_quantile > 1
+        min_prominence_quantile = 2
+        with pytest.raises(ValueError) as exception_info:
+            pxrd_tools.analyze.find_diffractogram_peaks(
+                two_theta_valid,
+                intensity_valid,
+                min_prominence_quantile=min_prominence_quantile,
+            )
+
+        assert (
+            f"Invalid 'min_prominence_quantile' value: {min_prominence_quantile}. "
+            "'min_prominence_quantile' should lie in the interval [0, 1]."
+            in str(exception_info)
         )

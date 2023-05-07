@@ -14,20 +14,15 @@ import numpy as np
 import scipy
 
 
-# --- Constants
+# --- Functions
 
-# Data cleaning parameters
+# Data correction parameters
 _DEFAULT_FILTER_ORDER = 3
 _DEFAULT_FILTER_WINDOW_SIZE_TWO_THETA = 0.2
 _DEFAULT_ZHANG_FIT_REPETITIONS = 15
 
-# Peak detection parameters
-_MIN_HEIGHT_QUANTILE = 0.8
-_MIN_PROMINENCE_QUANTILE = 0.6
 
-# --- Functions
-
-
+# TODO: add parameters for 2-theta and intensity columns
 def apply_diffractogram_corrections(
     data: DataFrame,
     filter_order: int = _DEFAULT_FILTER_ORDER,
@@ -139,68 +134,131 @@ def apply_diffractogram_corrections(
     return corrected_data
 
 
-def find_peaks(
+# Peak detection parameters
+_MIN_INTENSITY_QUANTILE = 0.75
+_MIN_PEAK_WIDTH_TWO_THETA = 0.015
+_MIN_PROMINENCE_QUANTILE = 0.25
+
+
+def find_diffractogram_peaks(
+    two_theta: np.ndarray,
     intensity: np.ndarray,
-    min_height: Optional[float] = None,
-    min_prominence: Optional[float] = None,
-    horizontal_axis_units: float = 1,
+    min_intensity_quantile: float = _MIN_INTENSITY_QUANTILE,
+    min_width: float = _MIN_PEAK_WIDTH_TWO_THETA,
+    min_prominence_quantile: float = _MIN_PROMINENCE_QUANTILE,
 ) -> (np.ndarray, np.ndarray):
     """
-    Identify peaks and estimate peak widths for a PXRD diffractogram.
+    Find peaks and estimate peak widths for a PXRD diffractogram.
 
     Parameters
     ----------
-    intensity: diffractogram intensity data
+    `two_theta`: 2-theta values
 
-    min_height: minimum intensity value required for a point to be considered a peak. When
-        set to `None`, TODO
+    `intensity`: intensity values
 
-    min_prominence: minimum prominence required for a point to be considered a peak. When
-        set to `None`, TODO
+    `min_intensity_quantile`: quantile of the intensity to use as the minimum peak intensity
+
+    `min_width`: minimum peak width in units of 2-theta
+
+    `min_prominence_quantile`: quantile of the prominence to use as the minimum peak
+        prominence. Note: the distribution of peak prominences is constructed from the
+        peaks detected using only the `min_intensity_quantile` and `min_width` parameters.
 
     Return value
     ------------
-    peak_indices: indices of the `intensity` where peaks are located
+    `peaks`: indicies of the intensity where peaks are located
 
-    peak_widths: peaks widths
+    `peak_widths`: peak widths in units of 2-theta
 
     Notes
     -----
-    * The spacing of intensity values on the horizontal axis is assumed to be uniform.
+    * The spacing of 2-theta values is assumed to be uniform.
 
     * See [scipy.signal.peak_prominences](https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.peak_prominences.html) for details about peak prominences.
-
     """
     # --- Check arguments
 
-    # min_height
-    if min_height is None:
-        min_height = np.quantile(intensity, q=_MIN_HEIGHT_QUANTILE)
+    # Check that two_theta is a vector
+    if len(two_theta.shape) > 1 or np.prod(two_theta.shape) != two_theta.size:
+        raise ValueError("'two_theta' should be a 1D vector")
 
-    if min_height <= 0:
+    # Check that two_theta is not empty
+    if len(two_theta) == 0:
+        raise ValueError("'two_theta' should not be empty")
+
+    # Check that intensity is a vector
+    if len(intensity.shape) > 1 or np.prod(intensity.shape) != intensity.size:
+        raise ValueError("'intensity' should be a 1D vector")
+
+    # Check that intensity is not empty
+    if len(intensity) == 0:
+        raise ValueError("'intensity' should not be empty")
+
+    # Check that two_theta and intensity have the same shape
+    if intensity.size != two_theta.size:
+        raise ValueError("'two_theta' and 'intensity' should be the same size")
+
+    # min_intensity_quantile
+    if min_intensity_quantile < 0 or min_intensity_quantile > 1:
         raise ValueError(
-            f"Invalid 'min_height' value: {min_height}. 'min_height' should be positive."
+            f"Invalid 'min_intensity_quantile' value: {min_intensity_quantile}. "
+            "'min_intensity_quantile' should lie in the interval [0, 1]."
         )
 
-    # min_prominence
-    if min_prominence is None:
-        min_prominence = np.quantile(intensity, q=_MIN_PROMINENCE_QUANTILE)
-
-    if min_prominence <= 0:
+    # min_width
+    if min_width <= 0:
         raise ValueError(
-            f"Invalid 'min_prominence' value: {min_prominence}. 'min_prominence' should "
-            "be positive."
+            f"Invalid 'min_width' value: {min_width}. 'min_width' should be positive."
         )
+
+    # min_prominence_quantile
+    if min_prominence_quantile < 0 or min_prominence_quantile > 1:
+        raise ValueError(
+            f"Invalid 'min_prominence_quantile' value: {min_prominence_quantile}. "
+            "'min_prominence_quantile' should lie in the interval [0, 1]."
+        )
+
+    # --- Preparations
+
+    # Compute spacing of 2-theta values
+    delta_two_theta = two_theta[1] - two_theta[0]
+    min_index_width = min_width / delta_two_theta
+
+    # ------ Compute minimum intensity to use for finding peaks
+
+    intensity_mean = np.mean(intensity)
+
+    intensity_quantile = np.quantile(intensity, q=min_intensity_quantile)
+
+    if intensity_mean > intensity_quantile:
+        min_intensity = intensity_mean
+    else:
+        min_intensity = intensity_quantile
 
     # --- Find peaks
 
-    # Identify peaks
-    peak_indices, properties = scipy.signal.find_peaks(
-        intensity, height=min_height, prominence=min_prominence
+    # Find peaks without prominence constraint
+    peaks, properties = scipy.signal.find_peaks(
+        intensity, height=min_intensity, width=min_index_width
     )
 
-    # Compute peak widths
-    widths, _, _, _ = scipy.signal.peak_widths(intensity, peak_indices)
-    peak_widths = horizontal_axis_units * widths
+    # Compute peak prominences
+    peak_prominences, _, _ = scipy.signal.peak_prominences(intensity, peaks)
 
-    return peak_indices, peak_widths
+    # Compute minimim peak prominence
+    min_prominence = np.quantile(peak_prominences, q=min_prominence_quantile)
+
+    # Find peaks with height and prominence constraints
+    peaks, properties = scipy.signal.find_peaks(
+        intensity,
+        height=min_intensity,
+        width=min_index_width,
+        prominence=min_prominence,
+    )
+
+    # --- Compute peak widths
+
+    widths, _, _, _ = scipy.signal.peak_widths(intensity, peaks)
+    peak_widths = delta_two_theta * widths
+
+    return peaks, peak_widths
