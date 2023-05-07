@@ -126,7 +126,7 @@ _MIN_PEAK_WIDTH_TWO_THETA = 0.015
 _MIN_PROMINENCE_QUANTILE = 0.25
 
 
-def find_diffractogram_peaks(
+def find_peaks(
     two_theta: np.ndarray,
     intensity: np.ndarray,
     min_intensity_quantile: float = _MIN_INTENSITY_QUANTILE,
@@ -152,9 +152,11 @@ def find_diffractogram_peaks(
 
     Return value
     ------------
-    `peaks`: indices of the intensity where peaks are located
+    `peaks`: location of peaks in units of 2-theta
 
     `peak_widths`: peak widths in units of 2-theta
+
+    `peak_indices`: indices of the intensity where peaks are located
 
     Notes
     -----
@@ -225,31 +227,33 @@ def find_diffractogram_peaks(
     # --- Find peaks
 
     # Find peaks without prominence constraint
-    peaks, properties = scipy.signal.find_peaks(
+    peak_indices, properties = scipy.signal.find_peaks(
         intensity, height=min_intensity, width=min_index_width
     )
 
     # Compute peak prominences
-    if peaks.size > 0:
-        peak_prominences, _, _ = scipy.signal.peak_prominences(intensity, peaks)
+    if peak_indices.size > 0:
+        peak_prominences, _, _ = scipy.signal.peak_prominences(intensity, peak_indices)
 
         # Compute minimim peak prominence
         min_prominence = np.quantile(peak_prominences, q=min_prominence_quantile)
 
         # Find peaks with height and prominence constraints
-        peaks, properties = scipy.signal.find_peaks(
+        peak_indices, properties = scipy.signal.find_peaks(
             intensity,
             height=min_intensity,
             width=min_index_width,
             prominence=min_prominence,
         )
 
-    # --- Compute peak widths
+    # --- Compute peak locations and widths
 
-    widths, _, _, _ = scipy.signal.peak_widths(intensity, peaks)
+    peaks = two_theta[peak_indices]
+
+    widths, _, _, _ = scipy.signal.peak_widths(intensity, peak_indices)
     peak_widths = delta_two_theta * widths
 
-    return peaks, peak_widths
+    return peaks, peak_widths, peak_indices
 
 
 # --- Helper functions

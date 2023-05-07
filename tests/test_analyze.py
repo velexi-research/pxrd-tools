@@ -259,9 +259,9 @@ class test_pxrd_tools_analyze(unittest.TestCase):
         )
 
     @staticmethod
-    def test_find_diffractogram_peaks_arg_checks():
+    def test_find_peaks_arg_checks():
         """
-        Test argument checks for `find_diffractogram_peaks()`.
+        Test argument checks for `find_peaks()`.
         """
         # --- Preparations
 
@@ -275,7 +275,7 @@ class test_pxrd_tools_analyze(unittest.TestCase):
 
         # two_theta is not a NumPy array
         try:
-            pxrd_tools.analyze.find_diffractogram_peaks(
+            pxrd_tools.analyze.find_peaks(
                 two_theta_valid.tolist(),
                 intensity_valid,
             )
@@ -287,7 +287,7 @@ class test_pxrd_tools_analyze(unittest.TestCase):
         two_theta_test = np.array([[1, 2], [4, 4]])
 
         with pytest.raises(ValueError) as exception_info:
-            pxrd_tools.analyze.find_diffractogram_peaks(two_theta_test, intensity_valid)
+            pxrd_tools.analyze.find_peaks(two_theta_test, intensity_valid)
 
         assert "two_theta' should be a 1D vector" in str(exception_info)
 
@@ -295,7 +295,7 @@ class test_pxrd_tools_analyze(unittest.TestCase):
         two_theta_test = np.array([])
 
         with pytest.raises(ValueError) as exception_info:
-            pxrd_tools.analyze.find_diffractogram_peaks(two_theta_test, intensity_valid)
+            pxrd_tools.analyze.find_peaks(two_theta_test, intensity_valid)
 
         assert "'two_theta' should not be empty" in str(exception_info)
 
@@ -303,7 +303,7 @@ class test_pxrd_tools_analyze(unittest.TestCase):
 
         # intensity is not a NumPy array
         try:
-            pxrd_tools.analyze.find_diffractogram_peaks(
+            pxrd_tools.analyze.find_peaks(
                 two_theta_valid,
                 intensity_valid.tolist(),
             )
@@ -315,7 +315,7 @@ class test_pxrd_tools_analyze(unittest.TestCase):
         intensity_test = np.array([[1, 2], [4, 4]])
 
         with pytest.raises(ValueError) as exception_info:
-            pxrd_tools.analyze.find_diffractogram_peaks(two_theta_valid, intensity_test)
+            pxrd_tools.analyze.find_peaks(two_theta_valid, intensity_test)
 
         assert "'intensity' should be a 1D vector" in str(exception_info)
 
@@ -323,7 +323,7 @@ class test_pxrd_tools_analyze(unittest.TestCase):
         intensity_test = np.array([])
 
         with pytest.raises(ValueError) as exception_info:
-            pxrd_tools.analyze.find_diffractogram_peaks(two_theta_valid, intensity_test)
+            pxrd_tools.analyze.find_peaks(two_theta_valid, intensity_test)
 
         assert "'intensity' should not be empty" in str(exception_info)
 
@@ -332,7 +332,7 @@ class test_pxrd_tools_analyze(unittest.TestCase):
         intensity_test = np.append(two_theta_valid, 0)
 
         with pytest.raises(ValueError) as exception_info:
-            pxrd_tools.analyze.find_diffractogram_peaks(two_theta_valid, intensity_test)
+            pxrd_tools.analyze.find_peaks(two_theta_valid, intensity_test)
 
         assert "'two_theta' and 'intensity' should be the same size" in str(
             exception_info
@@ -343,7 +343,7 @@ class test_pxrd_tools_analyze(unittest.TestCase):
         # min_intensity_quantile < 0
         min_intensity_quantile = -1
         with pytest.raises(ValueError) as exception_info:
-            pxrd_tools.analyze.find_diffractogram_peaks(
+            pxrd_tools.analyze.find_peaks(
                 two_theta_valid,
                 intensity_valid,
                 min_intensity_quantile=min_intensity_quantile,
@@ -358,7 +358,7 @@ class test_pxrd_tools_analyze(unittest.TestCase):
         # min_intensity_quantile > 1
         min_intensity_quantile = 2
         with pytest.raises(ValueError) as exception_info:
-            pxrd_tools.analyze.find_diffractogram_peaks(
+            pxrd_tools.analyze.find_peaks(
                 two_theta_valid,
                 intensity_valid,
                 min_intensity_quantile=min_intensity_quantile,
@@ -374,15 +374,13 @@ class test_pxrd_tools_analyze(unittest.TestCase):
 
         # min_width = 0
         with pytest.raises(ValueError) as exception_info:
-            pxrd_tools.analyze.find_diffractogram_peaks(
-                two_theta_valid, intensity_valid, min_width=0
-            )
+            pxrd_tools.analyze.find_peaks(two_theta_valid, intensity_valid, min_width=0)
 
         assert "'min_width' should be positive" in str(exception_info)
 
         # min_width < 0
         with pytest.raises(ValueError) as exception_info:
-            pxrd_tools.analyze.find_diffractogram_peaks(
+            pxrd_tools.analyze.find_peaks(
                 two_theta_valid, intensity_valid, min_width=-5
             )
 
@@ -393,7 +391,7 @@ class test_pxrd_tools_analyze(unittest.TestCase):
         # min_prominence_quantile < 0
         min_prominence_quantile = -1
         with pytest.raises(ValueError) as exception_info:
-            pxrd_tools.analyze.find_diffractogram_peaks(
+            pxrd_tools.analyze.find_peaks(
                 two_theta_valid,
                 intensity_valid,
                 min_prominence_quantile=min_prominence_quantile,
@@ -408,7 +406,7 @@ class test_pxrd_tools_analyze(unittest.TestCase):
         # min_prominence_quantile > 1
         min_prominence_quantile = 2
         with pytest.raises(ValueError) as exception_info:
-            pxrd_tools.analyze.find_diffractogram_peaks(
+            pxrd_tools.analyze.find_peaks(
                 two_theta_valid,
                 intensity_valid,
                 min_prominence_quantile=min_prominence_quantile,
@@ -420,9 +418,9 @@ class test_pxrd_tools_analyze(unittest.TestCase):
             in str(exception_info)
         )
 
-    def test_find_diffractogram_peaks(self):
+    def test_find_peaks(self):
         """
-        Test `find_diffractogram_peaks()`.
+        Test `find_peaks()`.
         """
         # --- Preparations
 
@@ -437,7 +435,7 @@ class test_pxrd_tools_analyze(unittest.TestCase):
 
         # --- Exercise functionality
 
-        peaks, peak_widths = pxrd_tools.analyze.find_diffractogram_peaks(
+        peaks, peak_widths, peak_indices = pxrd_tools.analyze.find_peaks(
             two_theta, corrected_intensity
         )
 
@@ -445,7 +443,15 @@ class test_pxrd_tools_analyze(unittest.TestCase):
 
         # peak locations
         assert len(peaks) == 52
-        assert list(peaks) == [
+        assert np.all(peaks == two_theta[peak_indices])
+
+        # peak widths
+        assert len(peak_widths) == 52
+        assert np.all(peak_widths >= pxrd_tools.analyze._MIN_PEAK_WIDTH_TWO_THETA)
+
+        # peak indices
+        assert len(peak_indices) == 52
+        assert list(peak_indices) == [
             749,
             1099,
             1440,
@@ -499,7 +505,3 @@ class test_pxrd_tools_analyze(unittest.TestCase):
             6547,
             7163,
         ]
-
-        # peak widths
-        assert len(peak_widths) == 52
-        assert np.all(peak_widths >= pxrd_tools.analyze._MIN_PEAK_WIDTH_TWO_THETA)
