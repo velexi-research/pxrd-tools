@@ -52,7 +52,7 @@ class test_pxrd_tools_analyze(unittest.TestCase):
 
         # ------ two_theta
 
-        # intensity is not an NumPy array
+        # intensity is not a NumPy array
         try:
             pxrd_tools.analyze.apply_diffractogram_corrections(
                 two_theta_valid.tolist(), intensity_valid, filter_window_size=None
@@ -83,7 +83,7 @@ class test_pxrd_tools_analyze(unittest.TestCase):
 
         # ------ intensity
 
-        # intensity is not an NumPy array
+        # intensity is not a NumPy array
         try:
             pxrd_tools.analyze.apply_diffractogram_corrections(
                 two_theta_valid, intensity_valid.tolist(), filter_window_size=None
@@ -268,7 +268,7 @@ class test_pxrd_tools_analyze(unittest.TestCase):
 
         # ------ two_theta
 
-        # two_theta is not an NumPy array
+        # two_theta is not a NumPy array
         try:
             pxrd_tools.analyze.find_diffractogram_peaks(
                 two_theta_valid.tolist(),
@@ -296,7 +296,7 @@ class test_pxrd_tools_analyze(unittest.TestCase):
 
         # ------ intensity
 
-        # intensity is not an NumPy array
+        # intensity is not a NumPy array
         try:
             pxrd_tools.analyze.find_diffractogram_peaks(
                 two_theta_valid,
