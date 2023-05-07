@@ -1,2 +1,16 @@
 pxrd-tools
-Copyright 2023 Kevin T. Chu
+Copyright 2023 Velexi Corporation
+
+------------------------------------------------------------------------------
+The following components of project are copyright by the International
+Union of Crystallography (IUCr). They were created by the Commission on
+Powder Diffraction (CPD) Project Round Robin on Quantitative Phase Analysis
+and available directly from the project website (which is no longer actively
+maintained):
+
+https://www.iucr.org/resources/commissions/powder-diffraction/projects/qarr
+
+* tests/data/brucite.prn
+* tests/data/zircon.prn
+
+------------------------------------------------------------------------------
