@@ -230,7 +230,7 @@ def find_diffractogram_peaks(
     )
 
     # Compute peak prominences
-    if peaks:
+    if peaks.size > 0:
         peak_prominences, _, _ = scipy.signal.peak_prominences(intensity, peaks)
 
         # Compute minimim peak prominence
