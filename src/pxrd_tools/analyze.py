@@ -9,7 +9,6 @@ from typing import Optional
 
 # External packages
 from BaselineRemoval import BaselineRemoval
-from pandas import DataFrame
 import numpy as np
 import scipy
 
@@ -22,13 +21,13 @@ _DEFAULT_FILTER_WINDOW_SIZE_TWO_THETA = 0.2
 _DEFAULT_ZHANG_FIT_REPETITIONS = 15
 
 
-# TODO: add parameters for 2-theta and intensity columns
 def apply_diffractogram_corrections(
-    data: DataFrame,
+    two_theta: np.ndarray,
+    intensity: np.ndarray,
     filter_order: int = _DEFAULT_FILTER_ORDER,
     filter_window_size: Optional[int] = None,
     zhang_fit_repetitions: int = _DEFAULT_ZHANG_FIT_REPETITIONS,
-) -> DataFrame:
+) -> np.ndarray:
     """
     Apply corrections to diffractogram data.
 
@@ -55,7 +54,7 @@ def apply_diffractogram_corrections(
 
     Return Value
     ------------
-    corrected diffractogram
+    corrected intensity
 
     Notes
     -----
@@ -68,26 +67,20 @@ def apply_diffractogram_corrections(
     # -----
     # * Savitzky-Golay filter parameters are checked by scipy.signal.savgol_filter()
 
-    # Check that data is not empty
-    if len(data.index) == 0:
-        raise ValueError("'data' should not be empty")
+    # ------ Perform two_theta and intensity checks
 
-    # Check that data contains the required columns
-    columns = [column.lower() for column in data.columns]
+    # Ensure that two_theta is a NumPy array
+    if not isinstance(two_theta, np.ndarray):
+        two_theta = np.array(two_theta)
 
-    if "2-theta" in columns:
-        two_theta_column = "2-theta"
-    elif "two-theta" in columns:
-        two_theta_column = "two-theta"
-    else:
-        raise ValueError("'data' should contain a '2-theta' or 'two-theta' column")
+    # Ensure that intensity is a NumPy array
+    if not isinstance(intensity, np.ndarray):
+        intensity = np.array(intensity)
 
-    if "intensity" in columns:
-        intensity_column = "intensity"
-    elif "count" in columns:
-        intensity_column = "count"
-    else:
-        raise ValueError("'data' should contain an 'intensity' or 'count' column")
+    # Validate two_theta and intensity arguments
+    _validate_two_theta_and_intensity_args(two_theta, intensity)
+
+    # ------ Data correction parameter checks
 
     # Check that the Savitky-Golay filter order is positive
     if filter_order <= 0:
@@ -96,8 +89,7 @@ def apply_diffractogram_corrections(
     # If needed, set default Savitky-Golay filter window size
     if filter_window_size is None:
         filter_window_size = math.ceil(
-            _DEFAULT_FILTER_WINDOW_SIZE_TWO_THETA
-            / (data[two_theta_column][1] - data[two_theta_column][0])
+            _DEFAULT_FILTER_WINDOW_SIZE_TWO_THETA / (two_theta[1] - two_theta[0])
         )
 
     # Check that the Savitky-Golay filter window size is positive
@@ -110,8 +102,8 @@ def apply_diffractogram_corrections(
 
     # --- Preparations
 
-    # Get intensity data
-    corrected_intensity = data[intensity_column].to_numpy()
+    # Initialize corrected intensity
+    corrected_intensity = np.copy(intensity)
 
     # --- Apply data correction
 
@@ -125,13 +117,7 @@ def apply_diffractogram_corrections(
         repitition=zhang_fit_repetitions
     )
 
-    # --- Construct DataFrame containing corrected data
-
-    corrected_data = DataFrame()
-    corrected_data[two_theta_column] = data[two_theta_column]
-    corrected_data[intensity_column] = corrected_intensity
-
-    return corrected_data
+    return corrected_intensity
 
 
 # Peak detection parameters
@@ -178,25 +164,20 @@ def find_diffractogram_peaks(
     """
     # --- Check arguments
 
-    # Check that two_theta is a vector
-    if len(two_theta.shape) > 1 or np.prod(two_theta.shape) != two_theta.size:
-        raise ValueError("'two_theta' should be a 1D vector")
+    # ------ Perform two_theta and intensity checks
 
-    # Check that two_theta is not empty
-    if len(two_theta) == 0:
-        raise ValueError("'two_theta' should not be empty")
+    # Ensure that two_theta is a NumPy array
+    if not isinstance(two_theta, np.ndarray):
+        two_theta = np.array(two_theta)
 
-    # Check that intensity is a vector
-    if len(intensity.shape) > 1 or np.prod(intensity.shape) != intensity.size:
-        raise ValueError("'intensity' should be a 1D vector")
+    # Ensure that intensity is a NumPy array
+    if not isinstance(intensity, np.ndarray):
+        intensity = np.array(intensity)
 
-    # Check that intensity is not empty
-    if len(intensity) == 0:
-        raise ValueError("'intensity' should not be empty")
+    # Validate two_theta and intensity arguments
+    _validate_two_theta_and_intensity_args(two_theta, intensity)
 
-    # Check that two_theta and intensity have the same shape
-    if intensity.size != two_theta.size:
-        raise ValueError("'two_theta' and 'intensity' should be the same size")
+    # ------ Peak detection parameter checks
 
     # min_intensity_quantile
     if min_intensity_quantile < 0 or min_intensity_quantile > 1:
@@ -217,6 +198,12 @@ def find_diffractogram_peaks(
             f"Invalid 'min_prominence_quantile' value: {min_prominence_quantile}. "
             "'min_prominence_quantile' should lie in the interval [0, 1]."
         )
+
+    # ------ Other argument checks
+
+    # Check that two_theta and intensity have the same shape
+    if intensity.size != two_theta.size:
+        raise ValueError("'two_theta' and 'intensity' should be the same size")
 
     # --- Preparations
 
@@ -243,18 +230,19 @@ def find_diffractogram_peaks(
     )
 
     # Compute peak prominences
-    peak_prominences, _, _ = scipy.signal.peak_prominences(intensity, peaks)
+    if peaks:
+        peak_prominences, _, _ = scipy.signal.peak_prominences(intensity, peaks)
 
-    # Compute minimim peak prominence
-    min_prominence = np.quantile(peak_prominences, q=min_prominence_quantile)
+        # Compute minimim peak prominence
+        min_prominence = np.quantile(peak_prominences, q=min_prominence_quantile)
 
-    # Find peaks with height and prominence constraints
-    peaks, properties = scipy.signal.find_peaks(
-        intensity,
-        height=min_intensity,
-        width=min_index_width,
-        prominence=min_prominence,
-    )
+        # Find peaks with height and prominence constraints
+        peaks, properties = scipy.signal.find_peaks(
+            intensity,
+            height=min_intensity,
+            width=min_index_width,
+            prominence=min_prominence,
+        )
 
     # --- Compute peak widths
 
@@ -262,3 +250,43 @@ def find_diffractogram_peaks(
     peak_widths = delta_two_theta * widths
 
     return peaks, peak_widths
+
+
+# --- Helper functions
+
+
+def _validate_two_theta_and_intensity_args(
+    two_theta: np.ndarray, intensity: np.ndarray
+) -> None:
+    """
+    Validate `two_theta` and `intensity` arguments.
+
+    Parameters
+    ----------
+    `two_theta`: 2-theta values
+
+    `intensity`: intensity values
+    """
+    # --- two_theta
+
+    # Check that two_theta is a vector
+    if len(two_theta.shape) > 1 or np.prod(two_theta.shape) != two_theta.size:
+        raise ValueError("'two_theta' should be a 1D vector")
+
+    # Check that two_theta is not empty
+    if len(two_theta) == 0:
+        raise ValueError("'two_theta' should not be empty")
+
+    # --- intensity
+
+    # Check that intensity is a vector
+    if len(intensity.shape) > 1 or np.prod(intensity.shape) != intensity.size:
+        raise ValueError("'intensity' should be a 1D vector")
+
+    # Check that intensity is not empty
+    if len(intensity) == 0:
+        raise ValueError("'intensity' should not be empty")
+
+    # Check that two_theta and intensity have the same shape
+    if intensity.size != two_theta.size:
+        raise ValueError("'two_theta' and 'intensity' should be the same size")

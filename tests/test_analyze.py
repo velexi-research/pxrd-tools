@@ -9,7 +9,6 @@ import unittest
 
 # External packages
 import numpy as np
-from pandas import DataFrame
 import pytest
 
 # Local modules
@@ -46,61 +45,83 @@ class test_pxrd_tools_analyze(unittest.TestCase):
         # --- Preparations
 
         # valid data
-        data_valid = DataFrame()
-        data_valid["intensity"] = np.linspace(1, 10)
-        data_valid["2-theta"] = np.linspace(1, 2)
+        two_theta_valid = np.linspace(1, 2)
+        intensity_valid = np.linspace(1, 10)
 
         # --- Exercise functionality and check results
 
-        # ------ data
+        # ------ two_theta
 
-        # data is empty
-        data_test = DataFrame()
-
-        with pytest.raises(ValueError) as exception_info:
-            pxrd_tools.analyze.apply_diffractogram_corrections(data_test)
-
-        assert "'data' should not be empty" in str(exception_info)
-
-        # data has a "two-theta" column instead of a "2-theta" column
-        data_test = copy.deepcopy(data_valid)
-        data_test.rename(columns={"2-theta": "two-theta"}, inplace=True)
-
+        # intensity is not an NumPy array
         try:
-            pxrd_tools.analyze.apply_diffractogram_corrections(data_test)
+            pxrd_tools.analyze.apply_diffractogram_corrections(
+                two_theta_valid.tolist(), intensity_valid, filter_window_size=None
+            )
             assert True
         except Exception:
-            pytest.fail("Valid `data` raised error")
+            pytest.fail("`intensity` as a list raised error")
 
-        # data is does not have a "2-theta" or "two-theta" column
-        data_test = copy.deepcopy(data_valid)
-        del data_test["2-theta"]
+        # two_theta is not a 1D vector
+        two_theta_test = np.array([[1, 2], [4, 4]])
 
         with pytest.raises(ValueError) as exception_info:
-            pxrd_tools.analyze.apply_diffractogram_corrections(data_test)
+            pxrd_tools.analyze.apply_diffractogram_corrections(
+                two_theta_test, intensity_valid
+            )
 
-        assert "'data' should contain a '2-theta' or 'two-theta' column" in str(
-            exception_info
-        )
+        assert "two_theta' should be a 1D vector" in str(exception_info)
 
-        # data has a "count" column instead of an "intensity" column
-        data_test = copy.deepcopy(data_valid)
-        data_test.rename(columns={"intensity": "count"}, inplace=True)
+        # two_theta is empty
+        two_theta_test = np.array([])
 
+        with pytest.raises(ValueError) as exception_info:
+            pxrd_tools.analyze.apply_diffractogram_corrections(
+                two_theta_test, intensity_valid
+            )
+
+        assert "'two_theta' should not be empty" in str(exception_info)
+
+        # ------ intensity
+
+        # intensity is not an NumPy array
         try:
-            pxrd_tools.analyze.apply_diffractogram_corrections(data_test)
+            pxrd_tools.analyze.apply_diffractogram_corrections(
+                two_theta_valid, intensity_valid.tolist(), filter_window_size=None
+            )
             assert True
         except Exception:
-            pytest.fail("Valid `data` raised error")
+            pytest.fail("`intensity` as a list raised error")
 
-        # data is does not have an "intensity" or "count" column
-        data_test = copy.deepcopy(data_valid)
-        del data_test["intensity"]
+        # intensity is not a 1D vector
+        intensity_test = np.array([[1, 2], [4, 4]])
 
         with pytest.raises(ValueError) as exception_info:
-            pxrd_tools.analyze.apply_diffractogram_corrections(data_test)
+            pxrd_tools.analyze.apply_diffractogram_corrections(
+                two_theta_valid, intensity_test
+            )
 
-        assert "'data' should contain an 'intensity' or 'count' column" in str(
+        assert "'intensity' should be a 1D vector" in str(exception_info)
+
+        # intensity is empty
+        intensity_test = np.array([])
+
+        with pytest.raises(ValueError) as exception_info:
+            pxrd_tools.analyze.apply_diffractogram_corrections(
+                two_theta_valid, intensity_test
+            )
+
+        assert "'intensity' should not be empty" in str(exception_info)
+
+        # ------ two_theta and intensity not the same size
+
+        intensity_test = np.append(two_theta_valid, 0)
+
+        with pytest.raises(ValueError) as exception_info:
+            pxrd_tools.analyze.apply_diffractogram_corrections(
+                two_theta_valid, intensity_test
+            )
+
+        assert "'two_theta' and 'intensity' should be the same size" in str(
             exception_info
         )
 
@@ -109,7 +130,7 @@ class test_pxrd_tools_analyze(unittest.TestCase):
         # filter_order = 0
         with pytest.raises(ValueError) as exception_info:
             pxrd_tools.analyze.apply_diffractogram_corrections(
-                data_valid, filter_order=0
+                two_theta_valid, intensity_valid, filter_order=0
             )
 
         assert "'filter_order' should be positive" in str(exception_info)
@@ -117,7 +138,7 @@ class test_pxrd_tools_analyze(unittest.TestCase):
         # filter_order < 0
         with pytest.raises(ValueError) as exception_info:
             pxrd_tools.analyze.apply_diffractogram_corrections(
-                data_valid, filter_order=-5
+                two_theta_valid, intensity_valid, filter_order=-5
             )
 
         assert "'filter_order' should be positive" in str(exception_info)
@@ -127,7 +148,7 @@ class test_pxrd_tools_analyze(unittest.TestCase):
         # filter_window_size = 0
         with pytest.raises(ValueError) as exception_info:
             pxrd_tools.analyze.apply_diffractogram_corrections(
-                data_valid, filter_window_size=0
+                two_theta_valid, intensity_valid, filter_window_size=0
             )
 
         assert "'filter_window_size' should be positive" in str(exception_info)
@@ -135,23 +156,21 @@ class test_pxrd_tools_analyze(unittest.TestCase):
         # filter_window_size < 0
         with pytest.raises(ValueError) as exception_info:
             pxrd_tools.analyze.apply_diffractogram_corrections(
-                data_valid, filter_window_size=-5
+                two_theta_valid, intensity_valid, filter_window_size=-5
             )
 
         assert "'filter_window_size' should be positive" in str(exception_info)
 
         # filter_window_size = None
-        data_test = copy.deepcopy(data_valid)
-        data_test.rename(columns={"intensity": "count"}, inplace=True)
-
         try:
             pxrd_tools.analyze.apply_diffractogram_corrections(
-                data_test, filter_window_size=None
+                two_theta_valid, intensity_valid, filter_window_size=None
             )
             assert True
         except Exception:
             pytest.fail(
-                "`filter_window_size` set to `None` with valid `data` raised error"
+                "`filter_window_size` set to `None` with valid `two_theta` and "
+                "`intensity` raised error"
             )
 
         # ------ zhang_fit_repetitions
@@ -159,7 +178,7 @@ class test_pxrd_tools_analyze(unittest.TestCase):
         # zhang_fit_repetitions = 0
         with pytest.raises(ValueError) as exception_info:
             pxrd_tools.analyze.apply_diffractogram_corrections(
-                data_valid, zhang_fit_repetitions=0
+                two_theta_valid, intensity_valid, zhang_fit_repetitions=0
             )
 
         assert "'zhang_fit_repetitions' should be positive" in str(exception_info)
@@ -167,22 +186,21 @@ class test_pxrd_tools_analyze(unittest.TestCase):
         # zhang_fit_repetitions < 0
         with pytest.raises(ValueError) as exception_info:
             pxrd_tools.analyze.apply_diffractogram_corrections(
-                data_valid, zhang_fit_repetitions=-5
+                two_theta_valid, intensity_valid, zhang_fit_repetitions=-5
             )
 
         assert "'zhang_fit_repetitions' should be positive" in str(exception_info)
 
         # ------ length of data less than filter_window
 
-        data_test = DataFrame()
-        data_test["intensity"] = [1, 2, 3, 4, 5]
-        data_test["2-theta"] = [1, 2, 3, 4, 5]
+        intensity_test = [1, 2, 3, 4, 5]
+        two_theta_test = [1, 2, 3, 4, 5]
 
         filter_window_size = 10
 
         with pytest.raises(ValueError) as exception_info:
             pxrd_tools.analyze.apply_diffractogram_corrections(
-                data_test, filter_window_size=filter_window_size
+                two_theta_test, intensity_test, filter_window_size=filter_window_size
             )
 
         assert (
@@ -198,39 +216,40 @@ class test_pxrd_tools_analyze(unittest.TestCase):
         # --- Test baseline removal
 
         # Preparations
-        data_no_noise = DataFrame()
-        data_no_noise["intensity"] = np.array([10, 20, 1.5, 5, 2, 9, 99, 25, 47])
-        data_no_noise["2-theta"] = np.linspace(1, 1.5, num=len(data_no_noise.index))
+        intensity_no_noise = np.array([10, 20, 1.5, 5, 2, 9, 99, 25, 47])
+        two_theta_no_noise = np.linspace(1, 1.5, num=len(intensity_no_noise))
 
         # Exerciser functionality
-        corrected_data_no_noise = pxrd_tools.analyze.apply_diffractogram_corrections(
-            data_no_noise
+        corrected_intensity_no_noise = (
+            pxrd_tools.analyze.apply_diffractogram_corrections(
+                two_theta_no_noise, intensity_no_noise
+            )
         )
 
         # Check results
-        assert isinstance(corrected_data_no_noise, DataFrame)
-        assert len(corrected_data_no_noise.index) == len(data_no_noise.index)
+        assert isinstance(corrected_intensity_no_noise, np.ndarray)
+        assert len(corrected_intensity_no_noise) == len(intensity_no_noise)
 
         # --- Test noise removal
 
         # Preparations
         rng = np.random.default_rng(seed=0)
-        data_with_noise = copy.deepcopy(data_no_noise)
-        data_with_noise["intensity"] += 0.05 * rng.standard_normal(
-            len(data_no_noise.index)
-        )
+        intensity_with_noise = copy.deepcopy(intensity_no_noise)
+        intensity_with_noise += 0.05 * rng.standard_normal(len(intensity_no_noise))
 
         # Exerciser functionality
-        corrected_data_with_noise = pxrd_tools.analyze.apply_diffractogram_corrections(
-            data_with_noise
+        corrected_intensity_with_noise = (
+            pxrd_tools.analyze.apply_diffractogram_corrections(
+                two_theta_no_noise, intensity_no_noise
+            )
         )
 
         # Check results
-        assert isinstance(corrected_data_with_noise, DataFrame)
-        assert len(corrected_data_with_noise.index) == len(data_with_noise.index)
+        assert isinstance(corrected_intensity_with_noise, np.ndarray)
+        assert len(corrected_intensity_with_noise) == len(intensity_with_noise)
         np.testing.assert_allclose(
-            corrected_data_with_noise["intensity"],
-            corrected_data_no_noise["intensity"],
+            corrected_intensity_with_noise,
+            corrected_intensity_no_noise,
             rtol=0.1,
         )
 
@@ -249,6 +268,16 @@ class test_pxrd_tools_analyze(unittest.TestCase):
 
         # ------ two_theta
 
+        # two_theta is not an NumPy array
+        try:
+            pxrd_tools.analyze.find_diffractogram_peaks(
+                two_theta_valid.tolist(),
+                intensity_valid,
+            )
+            assert True
+        except Exception:
+            pytest.fail("`two_theta` as a list raised error")
+
         # two_theta is not a 1D vector
         two_theta_test = np.array([[1, 2], [4, 4]])
 
@@ -266,6 +295,16 @@ class test_pxrd_tools_analyze(unittest.TestCase):
         assert "'two_theta' should not be empty" in str(exception_info)
 
         # ------ intensity
+
+        # intensity is not an NumPy array
+        try:
+            pxrd_tools.analyze.find_diffractogram_peaks(
+                two_theta_valid,
+                intensity_valid.tolist(),
+            )
+            assert True
+        except Exception:
+            pytest.fail("`intensity` as a list raised error")
 
         # intensity is not a 1D vector
         intensity_test = np.array([[1, 2], [4, 4]])
