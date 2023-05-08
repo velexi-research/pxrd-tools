@@ -134,7 +134,6 @@ def peaks(
         delimiter = r"\s+"
     else:
         delimiter = None
-    print(ext)
 
     # Load PXRD data
     data = pxrd_tools.io.read_csv(data_file, delimiter=delimiter)
@@ -163,4 +162,6 @@ def peaks(
         min_prominence_quantile=min_prominence_quantile,
     )
 
-    print(peaks)
+    # Print results to stdout
+    for peak, peak_width in zip(peaks, peak_widths):
+        print(f"{peak}, {peak_width:0.3f}")
