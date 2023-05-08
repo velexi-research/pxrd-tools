@@ -1,0 +1,15 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+# --- Imports
+
+# Standard library
+import sys
+
+# Internal modules
+from pxrd_tools.cli import app
+
+# --- Run main program
+
+if __name__ == "__main__":
+    sys.exit(app())

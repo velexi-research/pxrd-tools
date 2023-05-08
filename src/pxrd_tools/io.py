@@ -27,8 +27,8 @@ def read_csv(
     Read powder X-ray diffractogram from an ASCII file containing two columns: 2-theta
     and counts.
 
-    Arguments
-    ---------
+    Parameters
+    ----------
     path: path to data file
 
     delimiter: path to data file. Note: use a raw string when setting `delimiter` to a
