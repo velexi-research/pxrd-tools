@@ -132,7 +132,7 @@ def find_peaks(
     min_intensity_quantile: float = _MIN_INTENSITY_QUANTILE,
     min_width: float = _MIN_PEAK_WIDTH_TWO_THETA,
     min_prominence_quantile: float = _MIN_PROMINENCE_QUANTILE,
-) -> (np.ndarray, np.ndarray):
+) -> (np.ndarray, np.ndarray, np.ndarray):
     """
     Find peaks and estimate peak widths for a PXRD diffractogram.
 
