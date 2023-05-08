@@ -152,7 +152,7 @@ def peaks(
         intensity = np.log(intensity + 1)
 
     # Apply diffractogram corrections
-    data = pxrd_tools.analyze.apply_diffractogram_corrections(two_theta, intensity)
+    intensity = pxrd_tools.analyze.apply_diffractogram_corrections(two_theta, intensity)
 
     # Identify diffractogram peaks
     peaks, peak_widths, _ = pxrd_tools.analyze.find_peaks(
