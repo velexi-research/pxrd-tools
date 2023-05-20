@@ -12,7 +12,7 @@ import unittest
 import numpy as np
 import pytest
 
-# Local modules
+# Local packages/modules
 import pxrd_tools.analyze
 import pxrd_tools.io
 

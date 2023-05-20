@@ -12,7 +12,7 @@ import unittest
 from pandas import DataFrame
 import pytest
 
-# Local modules
+# Local packages/modules
 import pxrd_tools.io
 
 
