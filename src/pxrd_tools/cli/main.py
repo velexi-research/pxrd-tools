@@ -5,6 +5,7 @@ Main CLI program for PXRD analysis.
 
 # Standard library
 import logging
+import math
 import os
 from pathlib import Path
 from typing import Annotated
@@ -21,12 +22,15 @@ import pxrd_tools.io
 
 # --- Constants
 
-# Command arguments and options
+# ------ Imported constants
+
+# CLI arguments and options
 from .shared import DATA_FILE_ARG
 from .shared import QUIET_OPTION, DEFAULT_QUIET_OPTION
 from .shared import LOG_FILE_OPTION, DEFAULT_LOG_FILE
 from .shared import LOG_RECORD_FORMAT
 
+# Analysis parameters
 from pxrd_tools.analyze import (
     _MIN_INTENSITY_QUANTILE,
     _MIN_PEAK_WIDTH_TWO_THETA,
@@ -59,12 +63,19 @@ def main(
 
 # --- Commands
 
-# Command arguments and options
+# CLI arguments and options
 _VALID_INTENSITY_SCALE_OPTIONS = ["count", "sqrt", "log"]
 _INTENSITY_SCALE_OPTION = typer.Option(
     "--intensity-scale",
-    "-S",
+    "-I",
     help=f"Intensity scale. Valid values: {_VALID_INTENSITY_SCALE_OPTIONS}",
+)
+
+_VALID_HORIZONTAL_SCALE_OPTIONS = ["1/d", "2-theta"]
+_HORIZONTAL_SCALE_OPTION = typer.Option(
+    "--horizontal-scale",
+    "-H",
+    help=f"Horizontal scale. Valid values: {_VALID_HORIZONTAL_SCALE_OPTIONS}",
 )
 
 _MIN_INTENSITY_QUANTILE_OPTION = typer.Option(
@@ -90,11 +101,19 @@ _MIN_PROMINENCE_QUANTILE_OPTION = typer.Option(
     ),
 )
 
+_DEFAULT_X_RAY_WAVELENGTH = 1.542  # angstroms
+_X_RAY_WAVELENGTH_OPTION = typer.Option(
+    "--lambda",
+    "-l",
+    help="Wavelength of X-ray radiation used to collect diffractogram",
+)
+
 
 @app.command()
 def peaks(
     data_file: Annotated[Path, DATA_FILE_ARG],
     intensity_scale: Annotated[str, _INTENSITY_SCALE_OPTION] = "sqrt",
+    horizontal_scale: Annotated[str, _HORIZONTAL_SCALE_OPTION] = "1/d",
     min_intensity_quantile: Annotated[
         float, _MIN_INTENSITY_QUANTILE_OPTION
     ] = _MIN_INTENSITY_QUANTILE,
@@ -104,6 +123,9 @@ def peaks(
     min_prominence_quantile: Annotated[
         float, _MIN_PROMINENCE_QUANTILE_OPTION
     ] = _MIN_PROMINENCE_QUANTILE,
+    x_ray_wavelength: Annotated[
+        float, _X_RAY_WAVELENGTH_OPTION
+    ] = _DEFAULT_X_RAY_WAVELENGTH,
     quiet_local: Annotated[bool, QUIET_OPTION] = DEFAULT_QUIET_OPTION,
 ) -> None:
     """
@@ -122,6 +144,17 @@ def peaks(
         message = (
             f"'{intensity_scale}' is not a valid intensity scale. "
             f"Valid values: {_VALID_INTENSITY_SCALE_OPTIONS}"
+        )
+        error_console.print(message)
+        raise typer.Abort()
+
+    # Ensure that horizontal_scale is lowercase
+    horizontal_scale = horizontal_scale.lower()
+
+    if horizontal_scale not in _VALID_HORIZONTAL_SCALE_OPTIONS:
+        message = (
+            f"'{horizontal_scale}' is not a valid horizontal scale. "
+            f"Valid values: {_VALID_HORIZONTAL_SCALE_OPTIONS}"
         )
         error_console.print(message)
         raise typer.Abort()
@@ -162,6 +195,15 @@ def peaks(
         min_prominence_quantile=min_prominence_quantile,
     )
 
+    # --- Construct output
+
+    # Convert horizontal scale
+    if horizontal_scale == "1/d":
+        peak_widths *= (
+            2 / x_ray_wavelength * np.cos(peaks * math.pi / 360) * math.pi / 360
+        )
+        peaks = 2 / x_ray_wavelength * np.sin(peaks * math.pi / 360)
+
     # Print results to stdout
     for peak, peak_width in zip(peaks, peak_widths):
-        print(f"{peak}, {peak_width:0.3f}")
+        print(f"{peak}, {peak_width}")
