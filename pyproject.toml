@@ -6,6 +6,9 @@ license = "Apache-2.0"
 readme = "README.md"
 authors = ["Kevin T. Chu <kevin@velexi.com>"]
 
+[tool.poetry.scripts]
+pxrd-tools = "pxrd_tools.cli:app"
+
 [tool.poetry.dependencies]
 python = ">=3.9,<3.12"
 pandas = "^2.0.1"
