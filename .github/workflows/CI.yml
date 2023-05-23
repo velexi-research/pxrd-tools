@@ -89,9 +89,9 @@ jobs:
           source $VENV
           poetry run pytest --cov-report=xml
 
-      # --- Upload coverage report
+      # --- Upload coverage reports
 
-      - name: Upload coverage report to CodeCov
+      - name: Upload coverage reports to Codecov
         # Only run for 'main' branch running on 'Linux' with the latest version of Python
         if: |
             github.ref_name == 'main' &&
