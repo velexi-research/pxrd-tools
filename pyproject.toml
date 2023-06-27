@@ -10,7 +10,7 @@ authors = ["Kevin T. Chu <kevin@velexi.com>"]
 pxrd-tools = "pxrd_tools.cli:app"
 
 [tool.poetry.dependencies]
-python = ">=3.9,<3.12"
+python = "^3.9,<3.13"
 pandas = "^2.0.1"
 scipy = "^1.10.1"
 baselineremoval = "^0.1.4"
