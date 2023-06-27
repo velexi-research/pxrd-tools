@@ -10,6 +10,7 @@ import logging
 from rich import print
 import typer
 
+
 # --- Constants
 
 LOG_RECORD_FORMAT = "[%(asctime)s]:[%(name)s]:%(message)s"
