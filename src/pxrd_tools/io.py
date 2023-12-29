@@ -25,7 +25,7 @@ def read_csv(
 ) -> DataFrame:
     """
     Read powder X-ray diffractogram from an ASCII file containing two columns: 2-theta
-    and counts.
+    and count.
 
     Parameters
     ----------
@@ -59,3 +59,19 @@ def read_csv(
     )
 
     return diffractogram
+
+
+def read_prn(path: typing.Union[str, Path]) -> DataFrame:
+    """
+    Read powder X-ray diffractogram from an PRN file. PRN files are space-separated data
+    files containing two columns (2-theta and count) with leading whitespace.
+
+    Parameters
+    ----------
+    path: path to data file
+
+    Return value
+    ------------
+    DataFrame containing powder X-ray diffractogram
+    """
+    return read_csv(path, delimiter=r"\s+")
