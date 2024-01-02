@@ -1,26 +1,7 @@
-# --- Project configuration files
-
-.gitignore
-.ignore
-
-*.yaml
-*.yml
-
 # --- Auto-generated files
-
-pyproject.toml
-Project.toml
 
 docs/
 
 # --- Data files
 
 *.csv
-
-# --- Miscellaneous files
-
-LICENSE
-
-# --- Include GitHub Actions files
-
-!.github/**/*.yml
