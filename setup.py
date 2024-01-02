@@ -14,7 +14,7 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 """
-Note: this script provides support for legacy tools that don't support pyproject.toml.
+This setup script provides support for legacy tools that don't support pyproject.toml.
 """
 from setuptools import setup
 
