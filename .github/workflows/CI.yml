@@ -130,7 +130,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ~/.local
-          key: {{ github.repository }}-${{ github.workflow }}-${{ github.job }}-dotlocal-${{ runner.os }}-${{ runner.arch }}-${{ env.python-version }}-${{ hashFiles('.github/workflows/CI.yml') }}
+          key: ${{ github.repository }}-${{ github.workflow }}-${{ github.job }}-dotlocal-${{ runner.os }}-${{ runner.arch }}-${{ env.python-version }}-${{ hashFiles('.github/workflows/CI.yml') }}
 
       - name: Install Python poetry
         uses: snok/install-poetry@v1
