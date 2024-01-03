@@ -1,5 +1,5 @@
 """
-Unit tests for `pxrd_tools.io` module.
+Unit tests for `pxrd_tools.io` module
 """
 # --- Imports
 
