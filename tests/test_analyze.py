@@ -1,5 +1,5 @@
 """
-Unit tests for `pxrd_tools.analyze` module.
+Unit tests for `pxrd_tools.analyze` module
 """
 # --- Imports
 

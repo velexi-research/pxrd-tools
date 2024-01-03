@@ -1,5 +1,5 @@
 """
-Main CLI program for PXRD analysis.
+Main CLI program for PXRD analysis
 """
 # --- Imports
 
