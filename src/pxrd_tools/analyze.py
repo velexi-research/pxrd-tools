@@ -37,17 +37,17 @@ def apply_diffractogram_corrections(
 
     Parameters
     ----------
-    `data`: diffractogram data. Required columns:
-      * "2-theta" or "two-theta"
-      * "intensity" or "count"
+    `two_theta`: 2-theta values
+
+    `intensity`: intensity or count values
 
     `filter_order`: order of the polynomial to use for the Savitzky-Golay filter
 
     `filter_window_size`: width of the window to use for the Savitzky-Golay filter. By
         default, the window size is set to $\\lceil 0.2 / \\Delta(2\\theta) \\rceil$,
-        where $\\Delta(2\\theta)$ is the spacing $2 \\theta$ values in `data`. This
+        where $\\Delta(2\\theta)$ is the spacing $2\\theta$ values in `two_theta`. This
         choice yields a filter window that covers $0.2$ units of $2 \\theta$ (regardless
-        of the grid spacing in `data`).
+        of the grid spacing in `two_theta`).
 
     `zhang_fit_repetitions`: number of iterations to use for the baseline removal algorithm
         developed by Zhang, Chen, and Liang (2010).
