@@ -22,7 +22,7 @@ import pxrd_tools.io
 
 class test_pxrd_tools_analyze(unittest.TestCase):
     """
-    Test suite for the `pxrd_tools.analyze` module.
+    Test suite for the `pxrd_tools.analyze` module
     """
 
     # --- Fixtures
