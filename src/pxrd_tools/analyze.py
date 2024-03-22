@@ -58,7 +58,6 @@ def apply_diffractogram_corrections(
 
     Notes
     -----
-    * Required column names are case-insensitive.
     * The spacing between intensity values is assumed to be uniform in $2 \\theta$.
     """
     # --- Check arguments
