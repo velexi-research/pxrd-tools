@@ -35,7 +35,7 @@ pxrd-tools
 -------------------------------------------------------------------------------
 
 The `pxrd-tools` package provides basic tools that support analysis of Powder
-X-Ray Diffraction data.
+X-Ray Diffraction (PXRD) data.
 
 Currently, `pxrd-tools` provides support for:
 
