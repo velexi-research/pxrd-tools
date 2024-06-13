@@ -7,6 +7,7 @@ This __init__.py file
 
 * makes the `app` importable directly from the package
 """
+
 # --- Imports
 
 from .main import app  # noqa

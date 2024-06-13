@@ -34,64 +34,62 @@ pxrd-tools
 
 -------------------------------------------------------------------------------
 
-A brief description of the package.
+The `pxrd-tools` package provides basic tools that support analysis of Powder
+X-Ray Diffraction (PXRD) data.
 
-The pxrd-tools package features:
+Currently, `pxrd-tools` provides support for:
 
-* a list of the core features of the project.
+* automated peak detection.
 
 -------------------------------------------------------------------------------
 
 Table of Contents
 -----------------
 
-1. [Overview][#1]
+1. [Getting Started][#1]
 
-2. [Getting Started][#2]
+2. [Known Issues][#2]
 
-3. [Known Issues][#3]
+3. [Contributor Notes][#3]
 
-4. [Contributor Notes][#4]
+   3.1. [License][#3.1]
 
-   4.1. [License][#4.1]
+   3.2. [Package Contents][#3.2]
 
-   4.2. [Package Contents][#4.2]
+   3.3. [Setting Up a Development Environment][#3.3]
 
-   4.3. [Setting Up a Development Environment][#4.3]
+   3.4. [Running Automated Tests][#3.4]
 
-   4.4. [Running Automated Tests][#4.4]
-
-   4.5. [Cleaning the Development Directory][#4.5]
+   3.5. [Cleaning the Development Directory][#3.5]
 
 -------------------------------------------------------------------------------
 
-## 1. Overview
+## 1. Getting Started
 
-A more detailed description of the package.
+1. Clone the package from the project GitHub repository:
 
--------------------------------------------------------------------------------
+   `https://github.com/velexi-research/pxrd-tools`.
 
-## 2. Getting Started
-
-Instructions for installing and using the package.
-
--------------------------------------------------------------------------------
-
-## 3. Known Issues
-
-Known issues for the package.
+2. Follow steps 1, 2, and 3 from [Section 3.3][#3.3] "Setting Up a Development
+   Environment".
 
 -------------------------------------------------------------------------------
 
-## 4. Contributor Notes
+## 2. Known Issues
 
-### 4.1. License
+There are currently no known issues with this package.
+
+-------------------------------------------------------------------------------
+
+## 3. Contributor Notes
+
+### 3.1. License
 
 The contents of this package are covered under the Apache License 2.0 (included
 in the `LICENSE` file). The copyright for this package is contained in the
 `NOTICE` file.
 
-### 4.2. Package Contents
+### 3.2. Package Contents
 
 ```
 ├── README.md          <- this file
@@ -113,7 +111,7 @@ in the `LICENSE` file). The copyright for this package is contained in the
 └── tests/             <- package test code
 ```
 
-### 4.3. Setting Up a Development Environment
+### 3.3. Setting Up a Development Environment
 
 <strong><em>Note</em></strong>: this project uses `poetry` to manage Python
 package dependencies.
@@ -184,7 +182,7 @@ package dependencies.
    $ pre-commit install
    ```
 
-### 4.4. Running Automated Tests
+### 3.4. Running Automated Tests
 
 This project is configured to support (1) automated testing of code located in
 the `src` directory and (2) analysis of how well the tests cover of the source
@@ -203,7 +201,7 @@ code (i.e., coverage analysis).
   $ make fast-test
   ```
 
-### 4.5. Cleaning the Development Directory
+### 3.5. Cleaning the Development Directory
 
 * Use `make clean` to automatically remove temporary files and directories
   generated during testing (e.g., temporary directories, coverage files).
@@ -216,18 +214,16 @@ code (i.e., coverage analysis).
 
 [----------------------------- INTERNAL LINKS -----------------------------]: #
 
-[#1]: #1-overview
+[#1]: #1-getting-started
 
-[#2]: #2-getting-started
+[#2]: #2-known-issues
 
-[#3]: #3-known-issues
-
-[#4]: #4-contributor-notes
-[#4.1]: #41-license
-[#4.2]: #42-package-contents
-[#4.3]: #43-setting-up-a-development-environment
-[#4.4]: #44-running-automated-tests
-[#4.5]: #45-cleaning-the-development-directory
+[#3]: #3-contributor-notes
+[#3.1]: #31-license
+[#3.2]: #32-package-contents
+[#3.3]: #33-setting-up-a-development-environment
+[#3.4]: #34-running-automated-tests
+[#3.5]: #35-cleaning-the-development-directory
 
 [---------------------------- REPOSITORY LINKS ----------------------------]: #
 
