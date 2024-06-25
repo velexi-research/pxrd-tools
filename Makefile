@@ -25,7 +25,8 @@ PYTEST_PYLINT_OPTIONS=
 ## Run all tests
 test:
 	pytest ${PYTEST_OPTIONS} ${PYTEST_PYLINT_OPTIONS}
-	-make coverage-report
+	@make lint
+	@make coverage-report
 
 ## Run tests in fail-fast mode (i.e., stop at first failure)
 fast-test:
@@ -49,9 +50,13 @@ coverage-html: .coverage
 
 ## Lint code using flake8
 lint:
-	flake8 ${CODE_DIRS}
+	@echo
+	@echo "============================== flake8 start =============================="
+	-flake8 ${CODE_DIRS}
+	@echo "=============================== flake8 end ==============================="
+	@echo
 
-## Compute the Maintainability Index for source code files.
+## Compute the Maintainability Index for source code files
 radon-mi:
 	radon mi ${CODE_DIRS} -s --sort
 
@@ -60,7 +65,7 @@ radon-mi:
 radon-mi-fail:
 	radon mi ${CODE_DIRS} -xB -s --sort
 
-## Compute the Cyclomatic Complexity (CC) for source code files.
+## Compute the Cyclomatic Complexity (CC) for source code files
 radon-cc:
 	radon cc ${CODE_DIRS} --total-average
 
@@ -69,7 +74,7 @@ radon-cc:
 radon-cc-fail:
 	radon cc ${CODE_DIRS} -nC --average
 
-## Show the raw source code metrics computed by the `radon` tool.
+## Show the raw source code metrics computed by the `radon` tool
 radon-raw:
 	radon raw ${CODE_DIRS} -s
 
