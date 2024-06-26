@@ -55,7 +55,7 @@ lint:
      MESSAGE=" flake8 start "; \
      BOOKENDS="$$(( (`tput cols` - $${#MESSAGE}) / 2))"; \
      yes "" | head -n $$BOOKENDS | tr \\n "="; \
-	 printf "$$MESSAGE"; \
+     printf "$$MESSAGE"; \
      yes "" | head -n $$BOOKENDS | tr \\n "=";
 	@echo
 	-flake8 ${CODE_DIRS}
@@ -63,7 +63,7 @@ lint:
      MESSAGE=" flake8 end "; \
      BOOKENDS="$$(( (`tput cols` - $${#MESSAGE}) / 2))"; \
      yes "" | head -n $$BOOKENDS | tr \\n "="; \
-	 printf "$$MESSAGE"; \
+     printf "$$MESSAGE"; \
      yes "" | head -n $$BOOKENDS | tr \\n "=";
 	@echo
 	@echo
