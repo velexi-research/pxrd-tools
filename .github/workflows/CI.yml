@@ -86,7 +86,6 @@ jobs:
 
       - name: Run tests
         run: |
-          source $VENV
           poetry run pytest --cov-report=xml
 
       # --- Upload coverage reports
